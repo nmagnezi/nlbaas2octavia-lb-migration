@@ -1,3 +1,4 @@
+#!/bin/python
 # Copyright 2019 Nir Magnezi
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -109,16 +110,24 @@ class Manager(object):
 
         if nlbaas_pool_data.get('healthmonitor_id'):
             healthmonitor_id = nlbaas_pool_data['healthmonitor_id']
-            healthmonitor_data = self._lb_healthmonitors[healthmonitor_id]
-            octavia_hm = {
-                'type': healthmonitor_data.get('type'),
-                'delay': healthmonitor_data.get('delay'),
-                'expected_codes': healthmonitor_data.get('expected_codes'),
-                'http_method': healthmonitor_data.get('http_method'),
-                'max_retries': healthmonitor_data.get('max_retries'),
-                'timeout': healthmonitor_data.get('timeout'),
-                'url_path': healthmonitor_data.get('url_path')
-            }
+            healthmonitor_data = self._lb_healthmonitors[healthmonitor_id]['healthmonitor']
+            if healthmonitor_data['type']=="TCP":
+                octavia_hm = {
+                    'type': healthmonitor_data['type'],
+                    'delay': healthmonitor_data['delay'],
+                    'max_retries': healthmonitor_data['max_retries'],
+                    'timeout': healthmonitor_data['timeout']
+                }
+            else:
+                octavia_hm = {
+                    'type': healthmonitor_data['type'],
+                    'delay': healthmonitor_data['delay'],
+                    'expected_codes': healthmonitor_data['expected_codes'],
+                    'http_method': healthmonitor_data['http_method'],
+                    'url_path': healthmonitor_data['url_path'],
+                    'max_retries': healthmonitor_data['max_retries'],
+                    'timeout': healthmonitor_data['timeout']
+                }
         return octavia_hm
 
     def _build_members_list(self, pool_id):
@@ -128,6 +137,7 @@ class Manager(object):
         for member in nlbaas_pool_data['members']:
             member_id = member['id']
             member_data = self._lb_members[member_id]['member']
+            print(member_data)
             octavia_member = {
                 'admin_state_up': member_data['admin_state_up'],
                 'name': member_data['name'],
