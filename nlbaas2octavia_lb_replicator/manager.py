@@ -137,7 +137,6 @@ class Manager(object):
         for member in nlbaas_pool_data['members']:
             member_id = member['id']
             member_data = self._lb_members[member_id]['member']
-            print(member_data)
             octavia_member = {
                 'admin_state_up': member_data['admin_state_up'],
                 'name': member_data['name'],
